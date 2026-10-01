@@ -37,6 +37,34 @@
             color: #999;
         }
 
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 13px 18px;
+            border: 1px solid #292929;
+            background: #0b0b0b;
+            color: #888;
+            font: inherit;
+            cursor: pointer;
+            transition: background 0.15s, color 0.15s, border-color 0.15s;
+        }
+
+        .tab:hover {
+            color: #fff;
+            border-color: #555;
+        }
+
+        .tab.active {
+            background: #fff;
+            color: #000;
+            border-color: #fff;
+        }
+
         #downloads {
             display: grid;
             gap: 12px;
@@ -94,6 +122,10 @@
                 padding: 25px 15px;
             }
 
+            .tabs {
+                flex-direction: column;
+            }
+
             .file {
                 align-items: flex-start;
                 flex-direction: column;
@@ -105,6 +137,7 @@
             }
         }
     </style>
+
     <link rel="icon" type="image/jpeg" href="https://raw.githubusercontent.com/ThePhirst/gallery/main/images/debug_nodraw.jpg">
 
     <style>
@@ -130,6 +163,11 @@
         <h1>cONstRuct</h1>
         <p class="subtitle">Available files</p>
 
+        <div class="tabs">
+            <button class="tab active" data-category="interfere">interfere</button>
+            <button class="tab" data-category="Miscellaneous">Miscellaneous</button>
+        </div>
+
         <div id="downloads">
             <div class="message">Loading files...</div>
         </div>
@@ -150,6 +188,10 @@
         const apiUrl = `https://api.github.com/repos/${repository}/git/trees/${branch}?recursive=1`;
 
         const downloads = document.getElementById("downloads");
+        const tabs = document.querySelectorAll(".tab");
+
+        let allFiles = [];
+        let activeCategory = "interfere";
 
         function getDownloadUrl(path) {
             return `https://github.com/${repository}/raw/refs/heads/${branch}/${path.split("/").map(encodeURIComponent).join("/")}`;
@@ -184,6 +226,36 @@
             return item;
         }
 
+        function showCategory(category) {
+            activeCategory = category;
+
+            tabs.forEach(tab => {
+                tab.classList.toggle("active", tab.dataset.category === category);
+            });
+
+            downloads.innerHTML = "";
+
+            const categoryFiles = allFiles.filter(file => {
+                const firstFolder = file.path.split("/")[0];
+                return firstFolder.toLowerCase() === category.toLowerCase();
+            });
+
+            if (categoryFiles.length === 0) {
+                downloads.innerHTML = '<div class="message">No downloadable files are currently available.</div>';
+                return;
+            }
+
+            categoryFiles.forEach(file => {
+                downloads.appendChild(createFileElement(file));
+            });
+        }
+
+        tabs.forEach(tab => {
+            tab.addEventListener("click", function() {
+                showCategory(tab.dataset.category);
+            });
+        });
+
         async function loadFiles() {
             try {
                 const response = await fetch(apiUrl);
@@ -194,22 +266,13 @@
 
                 const data = await response.json();
 
-                const files = data.tree.filter(file =>
+                allFiles = data.tree.filter(file =>
                     file.type === "blob" &&
                     file.path !== "index.html" &&
                     file.path !== "README.md"
                 );
 
-                downloads.innerHTML = "";
-
-                if (files.length === 0) {
-                    downloads.innerHTML = '<div class="message">No downloadable files are currently available.</div>';
-                    return;
-                }
-
-                files.forEach(file => {
-                    downloads.appendChild(createFileElement(file));
-                });
+                showCategory(activeCategory);
             } catch (error) {
                 downloads.innerHTML = '<div class="message">Unable to load the available files.</div>';
                 console.error(error);
