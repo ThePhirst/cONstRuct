@@ -1,124 +1,195 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Gallery</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>cONstRuct — Downloads</title>
 
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
-            background: #000;
-            color: white;
-            font-family: Arial, sans-serif;
             margin: 0;
-            padding: 30px;
+            min-height: 100vh;
+            background: #000;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            padding: 40px 20px;
+        }
+
+        main {
+            width: min(100%, 900px);
+            margin: 0 auto;
         }
 
         h1 {
+            margin: 0;
+            text-align: center;
+            font-size: 32px;
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            margin: 10px 0 35px;
+            text-align: center;
+            color: #999;
+        }
+
+        #downloads {
+            display: grid;
+            gap: 12px;
+        }
+
+        .file {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 18px 20px;
+            border: 1px solid #292929;
+            background: #0b0b0b;
+        }
+
+        .file-name {
+            min-width: 0;
+            font-size: 16px;
+            overflow-wrap: anywhere;
+        }
+
+        .file-path {
+            margin-top: 5px;
+            color: #777;
+            font-size: 12px;
+            overflow-wrap: anywhere;
+        }
+
+        .download {
+            flex: 0 0 auto;
+            display: inline-block;
+            padding: 9px 15px;
+            border: 1px solid #fff;
+            color: #fff;
+            text-decoration: none;
+            font-size: 13px;
+            transition: background 0.15s, color 0.15s;
+        }
+
+        .download:hover {
+            background: #fff;
+            color: #000;
+        }
+
+        .message {
+            padding: 25px;
+            border: 1px solid #292929;
+            background: #0b0b0b;
+            color: #888;
             text-align: center;
         }
 
-        .gallery {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 15px;
-            max-width: 1200px;
-            margin: auto;
-        }
+        @media (max-width: 600px) {
+            body {
+                padding: 25px 15px;
+            }
 
-        .gallery img {
-            width: 100%;
-            height: 180px;
-            object-fit: cover;
-            cursor: pointer;
-            border-radius: 6px;
-            transition: 0.2s;
-        }
+            .file {
+                align-items: flex-start;
+                flex-direction: column;
+            }
 
-        .gallery img:hover {
-            transform: scale(1.03);
-        }
-
-        #viewer {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.9);
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-        }
-
-        #viewer img {
-            max-width: 90%;
-            max-height: 80%;
-        }
-
-        button {
-            margin: 15px 5px;
-            padding: 10px 20px;
-            cursor: pointer;
+            .download {
+                width: 100%;
+                text-align: center;
+            }
         }
     </style>
 </head>
 
 <body>
+    <main>
+        <h1>cONstRuct</h1>
+        <p class="subtitle">Available files</p>
 
-<h1>FUTURE</h1>
+        <div id="downloads">
+            <div class="message">Loading files...</div>
+        </div>
+    </main>
 
-<div class="gallery">
-    <img src="images/teaser_1.png" onclick="openImage(0)">
-    <img src="images/image2.jpg" onclick="openImage(1)">
-    <img src="images/image3.jpg" onclick="openImage(2)">
-    <img src="images/image4.jpg" onclick="openImage(3)">
-</div>
+    <script>
+        const repository = "ThePhirst/cONstRuct";
+        const branch = "main";
+        const apiUrl = `https://api.github.com/repos/${repository}/git/trees/${branch}?recursive=1`;
 
-<div id="viewer">
-    <img id="largeImage">
+        const downloads = document.getElementById("downloads");
 
-    <div>
-        <button onclick="previousImage()">← Previous</button>
-        <button onclick="nextImage()">Next →</button>
-        <button onclick="closeViewer()">Close</button>
-    </div>
-</div>
+        function getDownloadUrl(path) {
+            return `https://github.com/${repository}/raw/refs/heads/${branch}/${path.split("/").map(encodeURIComponent).join("/")}`;
+        }
 
-<script>
-    const images = [
-        "images/teaser_1.png",
-        "images/image2.jpg",
-        "images/image3.jpg",
-        "images/image4.jpg"
-    ];
+        function createFileElement(file) {
+            const item = document.createElement("div");
+            item.className = "file";
 
-    let currentImage = 0;
+            const info = document.createElement("div");
 
-    function openImage(index) {
-        currentImage = index;
-        document.getElementById("largeImage").src = images[currentImage];
-        document.getElementById("viewer").style.display = "flex";
-    }
+            const name = document.createElement("div");
+            name.className = "file-name";
+            name.textContent = file.path.split("/").pop();
 
-    function closeViewer() {
-        document.getElementById("viewer").style.display = "none";
-    }
+            const path = document.createElement("div");
+            path.className = "file-path";
+            path.textContent = file.path;
 
-    function previousImage() {
-        currentImage--;
+            info.appendChild(name);
+            info.appendChild(path);
 
-        if (currentImage < 0)
-            currentImage = images.length - 1;
+            const button = document.createElement("a");
+            button.className = "download";
+            button.href = getDownloadUrl(file.path);
+            button.download = file.path.split("/").pop();
+            button.textContent = "Download";
 
-        document.getElementById("largeImage").src = images[currentImage];
-    }
+            item.appendChild(info);
+            item.appendChild(button);
 
-    function nextImage() {
-        currentImage++;
+            return item;
+        }
 
-        if (currentImage >= images.length)
-            currentImage = 0;
+        async function loadFiles() {
+            try {
+                const response = await fetch(apiUrl);
 
-        document.getElementById("largeImage").src = images[currentImage];
-    }
-</script>
+                if (!response.ok) {
+                    throw new Error("GitHub API request failed");
+                }
 
+                const data = await response.json();
+
+                const files = data.tree.filter(file =>
+                    file.type === "blob" &&
+                    file.path !== "index.html" &&
+                    file.path !== "README.md"
+                );
+
+                downloads.innerHTML = "";
+
+                if (files.length === 0) {
+                    downloads.innerHTML = '<div class="message">No downloadable files are currently available.</div>';
+                    return;
+                }
+
+                files.forEach(file => {
+                    downloads.appendChild(createFileElement(file));
+                });
+            } catch (error) {
+                downloads.innerHTML = '<div class="message">Unable to load the available files.</div>';
+                console.error(error);
+            }
+        }
+
+        loadFiles();
+    </script>
 </body>
 </html>
