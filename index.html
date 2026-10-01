@@ -105,6 +105,24 @@
             }
         }
     </style>
+    <link rel="icon" type="image/jpeg" href="https://raw.githubusercontent.com/ThePhirst/gallery/main/images/debug_nodraw.jpg">
+
+    <style>
+        html, body, * {
+            cursor: none !important;
+        }
+
+        #customCursor {
+            position: fixed;
+            display: block;
+            width: 48px;
+            height: 48px;
+            object-fit: contain;
+            pointer-events: none;
+            z-index: 10001;
+            transform: translate(-6px, -6px);
+        }
+    </style>
 </head>
 
 <body>
@@ -117,7 +135,16 @@
         </div>
     </main>
 
+    <img id="customCursor" src="https://raw.githubusercontent.com/ThePhirst/gallery/main/images/node.gif" alt="">
+
     <script>
+        const customCursor = document.getElementById("customCursor");
+
+        document.addEventListener("mousemove", function(event) {
+            customCursor.style.left = event.clientX + "px";
+            customCursor.style.top = event.clientY + "px";
+        });
+
         const repository = "ThePhirst/cONstRuct";
         const branch = "main";
         const apiUrl = `https://api.github.com/repos/${repository}/git/trees/${branch}?recursive=1`;
