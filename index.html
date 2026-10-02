@@ -193,8 +193,35 @@
         let allFiles = [];
         let activeCategory = "interfere";
 
+        const miscellaneousFiles = [
+            {
+                name: "Miscellaneous File 1",
+                id: "1HWt_Jnf-Mzs1gl9q54PqmpDB4T7UOZQl"
+            },
+            {
+                name: "Miscellaneous File 2",
+                id: "1oygkpGh-vLu-qvk_bUnM5aRAvXmlbedh"
+            },
+            {
+                name: "Miscellaneous File 3",
+                id: "1RgKLEJzDU1-rSlPaaVSFeCgRPp4EaDQj"
+            },
+            {
+                name: "Miscellaneous File 4",
+                id: "1BbqEzCEXWsPzTbJ939CNNsiFCSrvIFFn"
+            },
+            {
+                name: "Miscellaneous File 5",
+                id: "1xZudCfEtpiKvi1jC9UrKfLfwYhd0NP8d"
+            }
+        ];
+
         function getDownloadUrl(path) {
             return `https://github.com/${repository}/raw/refs/heads/${branch}/${path.split("/").map(encodeURIComponent).join("/")}`;
+        }
+
+        function getGoogleDriveDownloadUrl(id) {
+            return `https://drive.google.com/uc?export=download&id=${encodeURIComponent(id)}`;
         }
 
         function createFileElement(file) {
@@ -205,19 +232,19 @@
 
             const name = document.createElement("div");
             name.className = "file-name";
-            name.textContent = file.path.split("/").pop();
+            name.textContent = file.name || file.path.split("/").pop();
 
             const path = document.createElement("div");
             path.className = "file-path";
-            path.textContent = file.path;
+            path.textContent = file.path || "External download";
 
             info.appendChild(name);
             info.appendChild(path);
 
             const button = document.createElement("a");
             button.className = "download";
-            button.href = getDownloadUrl(file.path);
-            button.download = file.path.split("/").pop();
+            button.href = file.downloadUrl || getDownloadUrl(file.path);
+            button.download = file.name || file.path.split("/").pop();
             button.textContent = "Download";
 
             item.appendChild(info);
@@ -234,6 +261,17 @@
             });
 
             downloads.innerHTML = "";
+
+            if (category.toLowerCase() === "miscellaneous") {
+                miscellaneousFiles.forEach(file => {
+                    downloads.appendChild(createFileElement({
+                        name: file.name,
+                        path: "Google Drive",
+                        downloadUrl: getGoogleDriveDownloadUrl(file.id)
+                    }));
+                });
+                return;
+            }
 
             const categoryFiles = allFiles.filter(file => {
                 const firstFolder = file.path.split("/")[0];
