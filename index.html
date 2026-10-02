@@ -75,9 +75,23 @@
             align-items: center;
             justify-content: space-between;
             gap: 20px;
-            padding: 18px 20px;
+            padding: 12px;
             border: 1px solid #292929;
             background: #0b0b0b;
+        }
+
+        .file-preview {
+            flex: 0 0 120px;
+            width: 120px;
+            height: 72px;
+            object-fit: cover;
+            display: block;
+            border: 1px solid #292929;
+        }
+
+        .file-info {
+            min-width: 0;
+            flex: 1;
         }
 
         .file-name {
@@ -127,8 +141,18 @@
             }
 
             .file {
-                align-items: flex-start;
+                align-items: stretch;
                 flex-direction: column;
+            }
+
+            .file-preview {
+                width: 100%;
+                height: 160px;
+                flex-basis: auto;
+            }
+
+            .file-info {
+                width: 100%;
             }
 
             .download {
@@ -196,23 +220,28 @@
         const miscellaneousFiles = [
             {
                 name: "Miscellaneous File 1",
-                id: "1HWt_Jnf-Mzs1gl9q54PqmpDB4T7UOZQl"
+                id: "1HWt_Jnf-Mzs1gl9q54PqmpDB4T7UOZQl",
+                preview: "celgora.jpg"
             },
             {
                 name: "Miscellaneous File 2",
-                id: "1oygkpGh-vLu-qvk_bUnM5aRAvXmlbedh"
+                id: "1oygkpGh-vLu-qvk_bUnM5aRAvXmlbedh",
+                preview: "keyboardprompt.jpg"
             },
             {
                 name: "Miscellaneous File 3",
-                id: "1RgKLEJzDU1-rSlPaaVSFeCgRPp4EaDQj"
+                id: "1RgKLEJzDU1-rSlPaaVSFeCgRPp4EaDQj",
+                preview: "procedure.jpg"
             },
             {
                 name: "Miscellaneous File 4",
-                id: "1BbqEzCEXWsPzTbJ939CNNsiFCSrvIFFn"
+                id: "1BbqEzCEXWsPzTbJ939CNNsiFCSrvIFFn",
+                preview: "shapey.jpg"
             },
             {
                 name: "Miscellaneous File 5",
-                id: "1xZudCfEtpiKvi1jC9UrKfLfwYhd0NP8d"
+                id: "1xZudCfEtpiKvi1jC9UrKfLfwYhd0NP8d",
+                preview: "zenith.jpg"
             }
         ];
 
@@ -228,7 +257,17 @@
             const item = document.createElement("div");
             item.className = "file";
 
+            if (file.previewUrl) {
+                const preview = document.createElement("img");
+                preview.className = "file-preview";
+                preview.src = file.previewUrl;
+                preview.alt = "";
+                preview.loading = "lazy";
+                item.appendChild(preview);
+            }
+
             const info = document.createElement("div");
+            info.className = "file-info";
 
             const name = document.createElement("div");
             name.className = "file-name";
@@ -267,7 +306,8 @@
                     downloads.appendChild(createFileElement({
                         name: file.name,
                         path: "Google Drive",
-                        downloadUrl: getGoogleDriveDownloadUrl(file.id)
+                        downloadUrl: getGoogleDriveDownloadUrl(file.id),
+                        previewUrl: "images/" + file.preview
                     }));
                 });
                 return;
