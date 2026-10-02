@@ -273,12 +273,14 @@
             name.className = "file-name";
             name.textContent = file.name || file.path.split("/").pop();
 
-            const path = document.createElement("div");
-            path.className = "file-path";
-            path.textContent = file.path || "External download";
-
             info.appendChild(name);
-            info.appendChild(path);
+
+            if (file.path) {
+                const path = document.createElement("div");
+                path.className = "file-path";
+                path.textContent = file.path;
+                info.appendChild(path);
+            }
 
             const button = document.createElement("a");
             button.className = "download";
@@ -305,7 +307,6 @@
                 miscellaneousFiles.forEach(file => {
                     downloads.appendChild(createFileElement({
                         name: file.name,
-                        path: "Google Drive",
                         downloadUrl: getGoogleDriveDownloadUrl(file.id),
                         previewUrl: "images/" + file.preview
                     }));
