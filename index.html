@@ -219,7 +219,8 @@
 
         const interfereFile = {
             name: "interfere",
-            id: "1gLQKurWedMv2bBpWJWYJIGIuoHgQyrMb"
+            id: "1gLQKurWedMv2bBpWJWYJIGIuoHgQyrMb",
+            preview: "interfere.jpg"
         };
 
         const miscellaneousFiles = [
@@ -256,10 +257,6 @@
 
         function getGoogleDriveDownloadUrl(id) {
             return `https://drive.google.com/uc?export=download&id=${encodeURIComponent(id)}`;
-        }
-
-        function getGoogleDrivePreviewUrl(id) {
-            return `https://drive.google.com/thumbnail?id=${encodeURIComponent(id)}&sz=w1200`;
         }
 
         function createFileElement(file) {
@@ -316,7 +313,7 @@
                 downloads.appendChild(createFileElement({
                     name: interfereFile.name,
                     downloadUrl: getGoogleDriveDownloadUrl(interfereFile.id),
-                    previewUrl: getGoogleDrivePreviewUrl(interfereFile.id)
+                    previewUrl: "images/" + interfereFile.preview
                 }));
                 return;
             }
