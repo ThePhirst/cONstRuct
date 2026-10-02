@@ -201,10 +201,15 @@
 
     <script>
         const customCursor = document.getElementById("customCursor");
+        const normalCursor = "https://raw.githubusercontent.com/ThePhirst/gallery/main/images/node.gif";
+        const hoveringCursor = "https://raw.githubusercontent.com/ThePhirst/gallery/main/images/node_hovering.gif";
 
         document.addEventListener("mousemove", function(event) {
             customCursor.style.left = event.clientX + "px";
             customCursor.style.top = event.clientY + "px";
+
+            const clickable = event.target.closest("a, button, [onclick]");
+            customCursor.src = clickable ? hoveringCursor : normalCursor;
         });
 
         const repository = "ThePhirst/cONstRuct";
