@@ -273,7 +273,7 @@
             {
                 name: "Untitled",
                 id: "1n9C0Tj4pXD2IzoGtxe3m_-i0jY5KgpZn",
-                preview: null
+                preview: "iteration_3.jpg"
             }
         ];
 
@@ -349,7 +349,7 @@
                     downloads.appendChild(createFileElement({
                         name: file.name,
                         downloadUrl: getGoogleDriveDownloadUrl(file.id),
-                        previewUrl: "images/" + file.preview
+                        previewUrl: file.preview ? "images/" + file.preview : null
                     }));
                 });
                 return;
